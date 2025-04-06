@@ -50,7 +50,7 @@ class Visita:
         return self.__fecha
     def asignarFecha(self,f):
         self.__fecha=f
-    
+
     def verRegistro(self):
         return self.__registro
     def asignarRegistro(self,f):
@@ -93,8 +93,15 @@ class Paciente:
 
     def ingresarVisitas(self, v):
         self.__visitas[v.verFecha()] = v
-
-
+    
+    def validarFecha(self, fecha_str):
+        try:
+            datetime.datetime.strptime(fecha_str, "%d/%m/%Y")
+            return True
+        except ValueError:
+            print("Fecha inválida. Usa el formato dd/mm/aaaa.")
+            return False
+    
     def verificarVisita(self,fecha):
         if fecha in self.__visitas:
             return True
@@ -165,122 +172,155 @@ class Sistema:
             else:
                 print("No se encontró un paciente con esa cédula.")
 def main():
-    sis = Sistema() 
-    
+    sis = Sistema()
+    def validarFloat(mensaje):
+        while True:
+            try:
+                valor = float(input(mensaje))
+                return valor
+            except ValueError:
+                print("Por favor, ingrese un número válido (usar punto para decimales, no coma).")
+
     while True:
-        try:
-       
-            opcion = int(input('''Sistema de Gestión de Registros Electrofisiológicos ===
-            1. Ingresar nuevo paciente
-            2. Editar paciente existente
-            3. Eliminar paciente
-            4. Ver paciente
-            5. Guardar pacientes en archivo
-            6. Salir
-                        '''))
-            if opcion == 1:
+        opcion = int(input('''--------Sistema de Gestión de Registros Electrofisiológicos------------
+        1. Ingresar nuevo paciente
+        2. Editar paciente existente
+        3. Eliminar paciente
+        4. Ver paciente
+        5. Guardar pacientes en archivo
+        6. Salir
+                           
+        ---Digite una opción:  '''))
+        if opcion == 1:
+            while True:
                 cedula = input("Ingrese la cédula del paciente: ")
                 if sis.verificarPaciente(cedula):
-                    print("Ya existe un paciente con esa cédula.")
+                    print("\nYa existe un paciente con esa cédula.\n")
                 else:
-                    nombre = input("Ingrese el nombre: ")
-                    genero = input("Ingrese el género: ")
-                    pac = Paciente()
-                    pac.asignarNombre(nombre)
-                    pac.asignarCedula(cedula)
-                    pac.asignarGenero(genero)
-
-                    agregar_visitas = input("¿Desea agregar visitas ahora? (si/no): ").lower()
-                    while agregar_visitas == 'si':
-                        fecha = input("Ingrese la fecha de la visita (dd/mm/aaaa): ")
-                        if pac.verificarVisita(fecha):
-                            print("Ya hay una visita registrada en esa fecha.")
-                        else:
-                            registro = os.getcwd()
-                            notas = input("Notas del técnico: ")
-                            visita = Visita()
-                            visita.asignarFecha(fecha)
-                            visita.asignarRegistro(registro)
-                            visita.asignarNotas(notas)
-
-                            indices = Indices()
-                            indices.asignarPod_d(float(input("Potencia delta: ")))
-                            indices.asignarPod_t(float(input("Potencia theta: ")))
-                            indices.asignarPod_a1(float(input("Potencia alfa1: ")))
-                            indices.asignarPod_a2(float(input("Potencia alfa2: ")))
-                            indices.asignarPod_b(float(input("Potencia beta: ")))
-                            indices.asignarPod_g(float(input("Potencia gamma: ")))
-
-                            visita.asignarindice(indices)
-                            pac.ingresarVisitas(visita)
-                            print("Visita registrada.")
-
-                        agregar_visitas = input("¿Desea agregar otra visita? (s/n): ").lower()
-
-                    sis.ingresarPaciente(pac)
-                    print("Paciente y visitas registrados correctamente.")
-
-            elif opcion == 2:
-                cedula = input("Ingrese la cédula del paciente a editar: ")
-                if sis.verificarPaciente(cedula):
-                    pac = sis.verDatosPaciente(cedula)
-                    sub_opcion = int(input("1. Agregar visita\n2. Eliminar visita\nSeleccione: "))
-                    if sub_opcion == 1:
-                        fecha = input("Ingrese la fecha de la visita (dd/mm/aaaa): ")
-                        if pac.verificarVisita(fecha):
-                            print("Ya hay una visita registrada en esa fecha.")
-                        else:
-                            registro = os.getcwd()
-                            notas = input("Notas del técnico: ")
-                            visita = Visita()
-                            visita.asignarFecha(fecha)
-                            visita.asignarRegistro(registro)
-                            visita.asignarNotas(notas)
-
-                            indices = Indices()
-                            indices.asignarPod_d(float(input("Potencia delta: ")))
-                            indices.asignarPod_t(float(input("Potencia theta: ")))
-                            indices.asignarPod_a1(float(input("Potencia alfa1: ")))
-                            indices.asignarPod_a2(float(input("Potencia alfa2: ")))
-                            indices.asignarPod_b(float(input("Potencia beta: ")))
-                            indices.asignarPod_g(float(input("Potencia gamma: ")))
-
-                            visita.asignarindice(indices)
-                            pac.ingresarVisitas(visita)
-                            print("Visita agregada.")
-                    elif sub_opcion == 2:
-                        fecha = input("Ingrese la fecha de la visita a eliminar (dd/mm/aaaa): ")
-                        if pac.eliminarVisita(fecha):
-                            print("Visita eliminada.")
-                        else:
-                            print("No existe una visita en esa fecha.")
-                    else:
-                        print("Paciente no encontrado.")
-            elif opcion == 3:
-                    cedula = input("Ingrese la cédula del paciente a eliminar: ")
-                    if sis.verificarPaciente(cedula):
-                        sis.eliminarPaciente(cedula)
-                        print("Paciente eliminado.")
-                    else:
-                        print("Paciente no encontrado.")
-            elif opcion == 4:
-                    cedula = input("Ingrese la cédula del paciente: ")
-                    if sis.verificarPaciente(cedula):
-                        print(pac)
-                    else:
-                        print("Paciente no encontrado.")
-            elif opcion == 5:
-                    cedula = input("Ingrese la cédula del paciente a guardar: ")
-                    sis.cargarguardar(cedula)
-
-            elif opcion == 6:
-                    print("Saliendo del sistema...")
                     break
-            else:
-                print("Opción no válida.")
-        except ValueError:
-            print("Ingrese un número válido.")
-        
+            nombre = input("Ingrese el nombre: ")
+            genero = input("Ingrese el género: ")
+            pac = Paciente()
+            pac.asignarNombre(nombre)
+            pac.asignarCedula(cedula)
+            pac.asignarGenero(genero)
+
+            agregar_visitas = input("¿Desea agregar visitas ahora? (si/no): ").lower()
+            while agregar_visitas == 'si':
+                fecha = input("Ingrese la fecha de la visita (dd/mm/aaaa): ")
+                if pac.validarFecha(fecha):
+                    if pac.verificarVisita(fecha):
+                        print("Ya hay una visita registrada en esa fecha.")
+                    else:
+                        registro = os.getcwd()
+                        notas = input("Notas del técnico: ")
+                        visita = Visita()
+                        visita.asignarFecha(fecha)
+                        visita.asignarRegistro(registro)
+                        visita.asignarNotas(notas)
+
+                        indices = Indices()
+                        indices.asignarPod_t(validarFloat("Potencia theta: "))
+                        indices.asignarPod_a1(validarFloat("Potencia alfa1: "))
+                        indices.asignarPod_a2(validarFloat("Potencia alfa2: "))
+                        indices.asignarPod_b(validarFloat("Potencia beta: "))
+                        indices.asignarPod_g(validarFloat("Potencia gamma: "))
+
+                        visita.asignarindice(indices)
+                        pac.ingresarVisitas(visita)
+                        print("Visita registrada.")
+
+                    agregar_visitas = input("¿Desea agregar otra visita? (si/no): ").lower()
+                    if agregar_visitas=='si':
+                        fecha = input("Ingrese la fecha de la visita (dd/mm/aaaa): ")
+                        if pac.verificarVisita(fecha):
+                            print("Ya hay una visita registrada en esa fecha.")
+                        else:
+                            registro = os.getcwd()
+                            notas = input("Notas del técnico: ")
+                            visita = Visita()
+                            visita.asignarFecha(fecha)
+                            visita.asignarRegistro(registro)
+                            visita.asignarNotas(notas)
+
+                            indices = Indices()
+                            indices.asignarPod_d(float(input("Potencia delta: ")))
+                            indices.asignarPod_t(float(input("Potencia theta: ")))
+                            indices.asignarPod_a1(float(input("Potencia alfa1: ")))
+                            indices.asignarPod_a2(float(input("Potencia alfa2: ")))
+                            indices.asignarPod_b(float(input("Potencia beta: ")))
+                            indices.asignarPod_g(float(input("Potencia gamma: ")))
+
+                            visita.asignarindice(indices)
+                            pac.ingresarVisitas(visita)
+                            print("\nVisita agregada.\n")
+                else: 
+                    continue
+                
+            sis.ingresarPaciente(pac)
+            print("Paciente y visitas registrados correctamente.")
+
+        elif opcion == 2:
+            cedula = input("Ingrese la cédula del paciente a editar: ")
+            if sis.verificarPaciente(cedula):
+                pac = sis.verDatosPaciente(cedula)
+                sub_opcion = int(input("1. Agregar visita\n2. Eliminar visita\nSeleccione: "))
+                if sub_opcion == 1:
+                    while True:
+                        fecha = input("Ingrese la fecha de la visita (dd/mm/aaaa): ")
+                        if pac.verificarVisita(fecha):
+                            print("Ya hay una visita registrada en esa fecha.")
+                        else:
+                            break
+                    registro = os.getcwd()
+                    notas = input("Notas del técnico: ")
+                    visita = Visita()
+                    visita.asignarFecha(fecha)
+                    visita.asignarRegistro(registro)
+                    visita.asignarNotas(notas)
+
+                    indices = Indices()
+                    indices.asignarPod_d(float(input("Potencia delta: ")))
+                    indices.asignarPod_t(float(input("Potencia theta: ")))
+                    indices.asignarPod_a1(float(input("Potencia alfa1: ")))
+                    indices.asignarPod_a2(float(input("Potencia alfa2: ")))
+                    indices.asignarPod_b(float(input("Potencia beta: ")))
+                    indices.asignarPod_g(float(input("Potencia gamma: ")))
+
+                    visita.asignarindice(indices)
+                    pac.ingresarVisitas(visita)
+                    print("Visita agregada.")
+                elif sub_opcion == 2:
+                    fecha = input("Ingrese la fecha de la visita a eliminar (dd/mm/aaaa): ")
+                    if pac.eliminarVisita(fecha):
+                        print("Visita eliminada.")
+                    else:
+                        print("No existe una visita en esa fecha.")
+                else:
+                    print("Paciente no encontrado.")
+        elif opcion == 3:
+                cedula = input("Ingrese la cédula del paciente a eliminar: ")
+                if sis.verificarPaciente(cedula):
+                    sis.eliminarPaciente(cedula)
+                    return("Paciente eliminado.")
+                else:
+                    print("Paciente no encontrado.")
+                    
+        elif opcion == 4:
+                cedula = input("Ingrese la cédula del paciente: ")
+                if sis.verificarPaciente(cedula):
+                    print(pac)
+                else:
+                    print("Paciente no encontrado.")
+        elif opcion == 5:
+                cedula = input("Ingrese la cédula del paciente a guardar: ")
+                sis.cargarguardar(cedula)
+
+        elif opcion == 6:
+                print("Saliendo del sistema...")
+                break
+        else:
+            print("Opción no válida.")
 
 #aca el python descubre cual es la funcion principal
 if __name__ == "__main__":
