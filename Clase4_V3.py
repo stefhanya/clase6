@@ -1,9 +1,10 @@
+
 class Paciente:
     def __init__(self):
         self.__nombre = '' 
         self.__cedula = 0 
         self.__genero = '' 
-        self.__servicio = '' 
+        self.__visitas = {} 
               
     #metodos get    
     def verNombre(self):
@@ -12,8 +13,8 @@ class Paciente:
         return self.__cedula 
     def verGenero(self):
         return self.__genero 
-    def verServicio(self):
-        return self.__servicio 
+    def verVisitas(self):
+        return self.__visitas 
     # metodos set
     def asignarNombre(self,n):
         self.__nombre = n 
@@ -21,33 +22,30 @@ class Paciente:
         self.__cedula = c 
     def asignarGenero(self,g):
         self.__genero = g 
-    def asignarServicio(self,s):
-        self.__servicio = s 
+    def asignarVisitas(self,v):
+        self.__visitas = v 
         
 class Sistema:    
     def __init__(self):
-        self.__lista_pacientes = [] 
+        self.__pacientes = {} 
         
-    def verificarPaciente(self,cedula):
-        for p in self.__lista_pacientes:
-            if cedula == p.verCedula():
-                return True 
-        return False
+    def verificarPaciente(self,c):
+        return c in self.__pacientes
         
     def ingresarPaciente(self,pac):
-        self.__lista_pacientes.append(pac)
+        self.__pacientes[pac.verCedula()]=pac
+        return True
+    
+    def eliminarPaciente(self, c):
+        del self.__pacientes[c]
         return True
     
     def verDatosPaciente(self, c):
-        if self.verificarPaciente(c) == False:
-            return None
-        for p in self.__lista_pacientes:
-            #retorne la cedula y la comparo con la ingresada por teclado
-            if c == p.verCedula():
-                return p #si encuentro el paciente lo retorno
-            
-    def verNumeroPacientes(self):
-        print("En el sistema hay: " + str(len(self.__lista_pacientes)) + " pacientes") 
+        return self.__pacientes[c] #si encuentro el paciente lo retorno
+    
+    def cargarguardar(self):
+        #archivos txt
+
 
 def main():
     sis = Sistema() 
