@@ -1,4 +1,5 @@
 import datetime
+import os
 class Indices:
     def __init__(self):
         self.__pod_d= 0
@@ -28,28 +29,30 @@ class Indices:
     def asignarPod_a2(self,f):
         self.__pod_a2=f
 
-    def verPod_t(self):
+    def verPod_b(self):
         return self.__pod_b
-    def asignarPod_t(self,f):
+    def asignarPod_b(self,f):
         self.__pod_b=f
-    
+   
     def verPod_g(self):
         return self.__pod_g
     def asignarPod_g(self,f):
         self.__pod_g=f
+    def __str__(self):
+        return f"Delta: {self.verPod_d()}, Theta: {self.verPod_t()}, Alfa1: {self.verPod_a1()}, Alfa2: {self.verPod_a2()}, Beta: {self.verPod_b()}, Gamma: {self.verPod_g()}"
 class Visita:
     def __init__(self):
-        self.__fecha=datetime.datetime.now().strtime('%x')
-        self.__regitro=''
+        self.__fecha=datetime.datetime.now().strftime('%x')
+        self.__registro=''
         self.__notas=''
         self.__indice=Indices()
-    def verFechas(self):
+    def verFecha(self):
         return self.__fecha
     def asignarFecha(self,f):
         self.__fecha=f
     
     def verRegistro(self):
-        return self.__regitro
+        return self.__registro
     def asignarRegistro(self,f):
         self.__registro=f
     
@@ -62,7 +65,6 @@ class Visita:
         return self.__indice
     def asignarindice(self,f):
         self.__indice=f
-
 class Paciente:
     def __init__(self):
         self.__nombre = '' 
@@ -78,7 +80,7 @@ class Paciente:
     def verGenero(self):
         return self.__genero 
     def verVisitas(self):
-        return self.__visitas 
+        return self.__visitas
     # metodos set
     def asignarNombre(self,n):
         self.__nombre = n 
@@ -88,6 +90,32 @@ class Paciente:
         self.__genero = g 
     def asignarVisitas(self,v):
         self.__visitas = v 
+
+    def ingresarVisitas(self, v):
+        self.__visitas[v.verFecha()] = v
+
+
+    def verificarVisita(self,fecha):
+        if fecha in self.__visitas:
+            return True
+        else:
+            return False
+
+    def eliminarVisita(self, fecha):
+        if fecha in self.__visitas:
+            del self.__visitas[fecha]
+            return True
+        return False
+    
+    def __str__(self):
+        visitas_str = ""
+        if self.__visitas:
+            for fecha, visita in self.__visitas.items():
+                visitas_str += f"\n  - Fecha: {fecha}, Registro: {visita.verRegistro()}, Notas: {visita.verNotas()}, Índices: {visita.verIndice()}"
+        else:
+            visitas_str = "  No hay visitas registradas."
+        return f"Paciente: {self.__nombre}, Cédula: {self.__cedula}, Género: {self.__genero}\nVisitas:{visitas_str}"
+
         
 class Sistema:    
     def __init__(self):
@@ -107,65 +135,153 @@ class Sistema:
     def verDatosPaciente(self, c):
         return self.__pacientes[c] #si encuentro el paciente lo retorno
     
-    def cargarguardar(self):
-        #archivos txt
+    def cargarguardar(self, cedula):
+            if cedula in self.__pacientes:
+                pac=self.__pacientes[cedula]
+                nombrearchivo=f'{cedula}.txt'
+                with open(nombrearchivo, "w") as file:
+                    file.write(f"Nombre: {pac.verNombre()}\n")
+                    file.write(f"Cédula: {pac.verCedula()}\n")
+                    file.write(f"Género: {pac.verGenero()}\n")
+                    visitas = pac.verVisitas()
+                    if visitas:
+                        for fecha, visita in visitas.items():
+                            file.write(f"Fecha de visita: {visita.verFecha()}\n")
+                            file.write(f"Registro: {visita.verRegistro()}\n")
+                            file.write(f"Notas: {visita.verNotas()}\n")
 
-
+                            ind = visita.verIndice()
+                            file.write(f"Índices:\n")
+                            file.write(f"  pod_d: {ind.verPod_d()}\n")
+                            file.write(f"  pod_t: {ind.verPod_t()}\n")
+                            file.write(f"  pod_a1: {ind.verPod_a1()}\n")
+                            file.write(f"  pod_a2: {ind.verPod_a2()}\n")
+                            file.write(f"  pod_b: {ind.verPod_b()}\n")
+                            file.write(f"  pod_g: {ind.verPod_g()}\n")
+                            file.write("-" * 40 + "\n")
+                    else:
+                        file.write("No hay visitas registradas.\n")
+                print(f"Paciente guardado en el archivo: {nombrearchivo}")
+            else:
+                print("No se encontró un paciente con esa cédula.")
 def main():
     sis = Sistema() 
-    #probemos lo que llevamos programado
+    
     while True:
-        #TAREA HACER EL MENU
-        opcion = int(input("\nIngrese \n0 para salir, \n1 para ingresar nuevo paciente, \n2 ver Paciente\n\t--> ")) 
-        
-        if opcion == 1:
-            #ingreso pacientes
-            print("A continuacion se solicitaran los datos ...") 
-            #1. Se solicitan los datos
-            cedula = int(input("Ingrese la cedula: ")) 
-            if sis.verificarPaciente(cedula):
-                print("\n<< Ya existe un paciente con esa cedula >>".upper()) 
-            else:    
-                # 2. se crea un objeto Paciente
-                pac = Paciente() 
-                # como el paciente esta vacio debo ingresarle la informacion
-                pac.asignarNombre(input("Ingrese el nombre: ")) 
-                pac.asignarCedula(cedula) 
-                pac.asignarGenero(input("Ingrese el genero: ")) 
-                pac.asignarServicio(input("Ingrese servicio: ")) 
-                #3. se almacena en la lista que esta dentro de la clase sistema
-                r = sis.ingresarPaciente(pac)             
-                if r:
-                    print("Paciente ingresado") 
+        try:
+       
+            opcion = int(input('''Sistema de Gestión de Registros Electrofisiológicos ===
+            1. Ingresar nuevo paciente
+            2. Editar paciente existente
+            3. Eliminar paciente
+            4. Ver paciente
+            5. Guardar pacientes en archivo
+            6. Salir
+                        '''))
+            if opcion == 1:
+                cedula = input("Ingrese la cédula del paciente: ")
+                if sis.verificarPaciente(cedula):
+                    print("Ya existe un paciente con esa cédula.")
                 else:
-                    print("No ingresado") 
-        elif opcion == 2:
-            #1. solicito la cedula que quiero buscar
-            c = int(input("Ingrese la cedula a buscar: ")) 
-            #le pido al sistema que me devuelva en la variable p al paciente que tenga
-            #la cedula c en la lista
-            p = sis.verDatosPaciente(c) 
-            #2. si encuentro al paciente imprimo los datos
-            if p != None:
-                print("Nombre: " + p.verNombre()) 
-                print("Cedula: " + str(p.verCedula())) 
-                print("Genero: " + p.verGenero()) 
-                print("Servicio: " + p.verServicio()) 
+                    nombre = input("Ingrese el nombre: ")
+                    genero = input("Ingrese el género: ")
+                    pac = Paciente()
+                    pac.asignarNombre(nombre)
+                    pac.asignarCedula(cedula)
+                    pac.asignarGenero(genero)
+
+                    agregar_visitas = input("¿Desea agregar visitas ahora? (si/no): ").lower()
+                    while agregar_visitas == 'si':
+                        fecha = input("Ingrese la fecha de la visita (dd/mm/aaaa): ")
+                        if pac.verificarVisita(fecha):
+                            print("Ya hay una visita registrada en esa fecha.")
+                        else:
+                            registro = os.getcwd()
+                            notas = input("Notas del técnico: ")
+                            visita = Visita()
+                            visita.asignarFecha(fecha)
+                            visita.asignarRegistro(registro)
+                            visita.asignarNotas(notas)
+
+                            indices = Indices()
+                            indices.asignarPod_d(float(input("Potencia delta: ")))
+                            indices.asignarPod_t(float(input("Potencia theta: ")))
+                            indices.asignarPod_a1(float(input("Potencia alfa1: ")))
+                            indices.asignarPod_a2(float(input("Potencia alfa2: ")))
+                            indices.asignarPod_b(float(input("Potencia beta: ")))
+                            indices.asignarPod_g(float(input("Potencia gamma: ")))
+
+                            visita.asignarindice(indices)
+                            pac.ingresarVisitas(visita)
+                            print("Visita registrada.")
+
+                        agregar_visitas = input("¿Desea agregar otra visita? (s/n): ").lower()
+
+                    sis.ingresarPaciente(pac)
+                    print("Paciente y visitas registrados correctamente.")
+
+            elif opcion == 2:
+                cedula = input("Ingrese la cédula del paciente a editar: ")
+                if sis.verificarPaciente(cedula):
+                    pac = sis.verDatosPaciente(cedula)
+                    sub_opcion = int(input("1. Agregar visita\n2. Eliminar visita\nSeleccione: "))
+                    if sub_opcion == 1:
+                        fecha = input("Ingrese la fecha de la visita (dd/mm/aaaa): ")
+                        if pac.verificarVisita(fecha):
+                            print("Ya hay una visita registrada en esa fecha.")
+                        else:
+                            registro = os.getcwd()
+                            notas = input("Notas del técnico: ")
+                            visita = Visita()
+                            visita.asignarFecha(fecha)
+                            visita.asignarRegistro(registro)
+                            visita.asignarNotas(notas)
+
+                            indices = Indices()
+                            indices.asignarPod_d(float(input("Potencia delta: ")))
+                            indices.asignarPod_t(float(input("Potencia theta: ")))
+                            indices.asignarPod_a1(float(input("Potencia alfa1: ")))
+                            indices.asignarPod_a2(float(input("Potencia alfa2: ")))
+                            indices.asignarPod_b(float(input("Potencia beta: ")))
+                            indices.asignarPod_g(float(input("Potencia gamma: ")))
+
+                            visita.asignarindice(indices)
+                            pac.ingresarVisitas(visita)
+                            print("Visita agregada.")
+                    elif sub_opcion == 2:
+                        fecha = input("Ingrese la fecha de la visita a eliminar (dd/mm/aaaa): ")
+                        if pac.eliminarVisita(fecha):
+                            print("Visita eliminada.")
+                        else:
+                            print("No existe una visita en esa fecha.")
+                    else:
+                        print("Paciente no encontrado.")
+            elif opcion == 3:
+                    cedula = input("Ingrese la cédula del paciente a eliminar: ")
+                    if sis.verificarPaciente(cedula):
+                        sis.eliminarPaciente(cedula)
+                        print("Paciente eliminado.")
+                    else:
+                        print("Paciente no encontrado.")
+            elif opcion == 4:
+                    cedula = input("Ingrese la cédula del paciente: ")
+                    if sis.verificarPaciente(cedula):
+                        print(pac)
+                    else:
+                        print("Paciente no encontrado.")
+            elif opcion == 5:
+                    cedula = input("Ingrese la cédula del paciente a guardar: ")
+                    sis.cargarguardar(cedula)
+
+            elif opcion == 6:
+                    print("Saliendo del sistema...")
+                    break
             else:
-                print("No existe un paciente con esa cedula") 
-        elif opcion !=0:
-            continue 
-        else:
-            break 
+                print("Opción no válida.")
+        except ValueError:
+            print("Ingrese un número válido.")
+        
 
 #aca el python descubre cual es la funcion principal
 if __name__ == "__main__":
-    main() 
-        
-        
-        
-        
-        
-        
-        
-        
+    main()
