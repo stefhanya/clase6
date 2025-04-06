@@ -73,6 +73,9 @@ class Mascota:
             if med.verNombre() == nombre_medicamento:
                 return True
         return False
+    def __str__(self):
+        tipo_str = "Felino" if self.verTipo() == "1" else "Canino"
+        return f'Nombre: {self.verNombre()} \n Historia: {self.verHistoria()} \n Tipo: {tipo_str}\n--------------'
 
     
 
@@ -93,7 +96,6 @@ class sistemaV:
         for m in self.__lista_mascotas:
             if historia == m.verHistoria():
                 return True
-        #solo luego de haber recorrido todo el ciclo se retorna False
         return False
         
     def verNumeroMascotas(self):
@@ -112,11 +114,18 @@ class sistemaV:
     
     def verCaninoFelino(self):
         print('-------FELINOS--------')
-        for mascota in self.__dict_felino.values():
-            print(f"- {mascota.verNombre()}")
+        if not self.__dict_felino:
+            print('No hay pacientes felinos por el momento :(')
+        else:
+            for mascota in self.__dict_felino.values():
+                print(f"- {mascota}")
+
         print('-------CANINOS--------')
-        for mascota in self.__dict_canino.values():
-            print(f"- {mascota.verNombre()}")
+        if not self.__dict_canino:
+            print('No hay pacientes caninos por el momento :(')
+        else:
+            for mascota in self.__dict_canino.values():
+                print(f"- {mascota}")
 
         
     

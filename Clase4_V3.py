@@ -1,4 +1,4 @@
-import datetime
+import datetime 
 import os
 class Indices:
     def __init__(self):
@@ -256,7 +256,7 @@ def main():
                             print("\nVisita agregada.\n")
                 else: 
                     continue
-                
+
             sis.ingresarPaciente(pac)
             print("Paciente y visitas registrados correctamente.")
 
