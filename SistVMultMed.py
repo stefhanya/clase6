@@ -1,3 +1,4 @@
+import datetime
 class Medicamento:
     def __init__(self):
         self.__nombre = "" 
@@ -46,9 +47,32 @@ class Mascota:
         self.__peso=p
     def asignarFecha(self,f):
         self.__fecha_ingreso=f
+    def validarFecha(self,d):
+        try:
+            d.__asignarFecha = datetime.strptime(fecha_str, "%d/%m/%Y")
+            print("Fecha válida:", fecha.strftime("%d/%m/%Y"))
+            return True
+        except ValueError:
+            print("Fecha inválida. Usa el formato dd/mm/aaaa.")
+            return False
     def asignarLista_Medicamentos(self,n):
         self.__lista_medicamentos = n 
     
+    def eliminarMedicamento(self,d):
+        while True:
+            print('MEDICAMENTOS DE LA MASCOTA')
+            print(d.__verLista_Medicamentos)
+            x=input('Ingrese el nombre del medicamento a eliminar:')
+            if x in d.__lista_Medicamentos:
+                d.__lista_medicamentos.remove(x) 
+                return True
+            else:
+                print('El medicamento no corresponde a los disponibles, Ingrese de nuevo...')
+                continue
+    def verificarMedicamento(self,m):
+        return m in self.__lista_medicamentos
+    
+
 class sistemaV:
     def __init__(self):
         self.__lista_mascotas = []
@@ -116,11 +140,14 @@ def main():
 
                 for i in range(0,nm):
                     nombre_medicamentos = input("Ingrese el nombre del medicamento: ")
-                    dosis =int(input("Ingrese la dosis: "))
-                    medicamento = Medicamento()
-                    medicamento.asignarNombre(nombre_medicamentos)
-                    medicamento.asignarDosis(dosis)
-                    lista_med.append(medicamento)
+                    if servicio_hospitalario.verificarMedicamento(nombre_medicamentos):
+                        print("\n<< ese medicamento ya está siendo administrado a la mascota, ingrese uno nuevo >>".upper())
+                    else: 
+                        dosis =int(input("Ingrese la dosis: "))
+                        medicamento = Medicamento()
+                        medicamento.asignarNombre(nombre_medicamentos)
+                        medicamento.asignarDosis(dosis)
+                        lista_med.append(medicamento)
 
                 mas= Mascota()
                 mas.asignarNombre(nombre)
@@ -167,9 +194,20 @@ def main():
                 print("No se ha podido eliminar la mascota")
         
         elif menu==6:
-            print("Usted ha salido del sistema de servicio de hospitalización...")
-            break
-        
+            x=input('''Desea salir?
+                   1. SI 
+                   2. NO
+                   ''')
+            if x=='1':
+                print("Usted ha salido del sistema de servicio de hospitalización...")
+                break
+            elif x=='2':
+                print('Regresó al sistema----')
+                continue
+            else:
+                print("Usted ingresó una opción no válida, intentelo nuevamente...")
+                continue
+
         else:
             print("Usted ingresó una opción no válida, intentelo nuevamente...")
 
