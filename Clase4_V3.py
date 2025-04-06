@@ -36,8 +36,8 @@ class Indices:
    
     def verPod_g(self):
         return self.__pod_g
-    def asignarPod_g(self,f):
-        self.__pod_g=f
+    def asignarPod_g(self,g):
+        self.__pod_g=g
     def __str__(self):
         return f"Delta: {self.verPod_d()}, Theta: {self.verPod_t()}, Alfa1: {self.verPod_a1()}, Alfa2: {self.verPod_a2()}, Beta: {self.verPod_b()}, Gamma: {self.verPod_g()}"
 class Visita:
