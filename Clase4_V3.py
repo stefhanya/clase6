@@ -1,3 +1,67 @@
+import datetime
+class Indices:
+    def __init__(self):
+        self.__pod_d= 0
+        self.__pod_t= 0
+        self.__pod_a1= 0
+        self.__pod_a2= 0
+        self.__pod_b= 0
+        self.__pod_g= 0
+
+    def verPod_d(self):
+        return self.__pod_d
+    def asignarPod_d(self,f):
+        self.__pod_d=f
+
+    def verPod_t(self):
+        return self.__pod_t
+    def asignarPod_t(self,f):
+        self.__pod_t=f
+
+    def verPod_a1(self):
+        return self.__pod_a1
+    def asignarPod_a1(self,f):
+        self.__pod_a1=f
+    
+    def verPod_a2(self):
+        return self.__pod_a2
+    def asignarPod_a2(self,f):
+        self.__pod_a2=f
+
+    def verPod_t(self):
+        return self.__pod_b
+    def asignarPod_t(self,f):
+        self.__pod_b=f
+    
+    def verPod_g(self):
+        return self.__pod_g
+    def asignarPod_g(self,f):
+        self.__pod_g=f
+class Visita:
+    def __init__(self):
+        self.__fecha=datetime.datetime.now().strtime('%x')
+        self.__regitro=''
+        self.__notas=''
+        self.__indice=Indices()
+    def verFechas(self):
+        return self.__fecha
+    def asignarFecha(self,f):
+        self.__fecha=f
+    
+    def verRegistro(self):
+        return self.__regitro
+    def asignarRegistro(self,f):
+        self.__registro=f
+    
+    def verNotas(self):
+        return self.__notas
+    def asignarNotas(self,f):
+        self.__notas=f
+
+    def verIndice(self):
+        return self.__indice
+    def asignarindice(self,f):
+        self.__indice=f
 
 class Paciente:
     def __init__(self):
